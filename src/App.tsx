@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { COMMANDS, type Command } from "./data/commands";
 import { searchCommands } from "./lib/search";
 import { useFavorites } from "./hooks/useFavorites";
@@ -21,8 +21,18 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { favs, toggleFav, isFav, favCount } = useFavorites();
   const { theme, setTheme, accent, setAccent } = useTheme();
-  const { bg, setBackground } = useBackground();
+  const { bg, setBackground, imageUrl, uploadImage, clearImage } = useBackground();
   const { enabled: autoEnabled, ready: autoReady, toggle: toggleAutostart } = useAutostart();
+
+  // 液态玻璃「高光随鼠标」：把鼠标在玻璃表面上的位置写为 CSS 变量用于高光定位。
+  const handleGlassMove = (e: ReactMouseEvent<HTMLDivElement>) => {
+    const el = e.target as HTMLElement;
+    const surface = el.closest<HTMLElement>(".card, .sidebar, .search-wrap");
+    if (!surface) return;
+    const r = surface.getBoundingClientRect();
+    surface.style.setProperty("--mx", `${((e.clientX - r.left) / r.width) * 100}%`);
+    surface.style.setProperty("--my", `${((e.clientY - r.top) / r.height) * 100}%`);
+  };
 
   const handleSelectCat = (cat: string) => {
     setSelectedCat(cat);
@@ -56,7 +66,7 @@ export default function App() {
   }, [query, selectedCat, favs]);
 
   return (
-    <div className="app">
+    <div className="app" onMouseMove={handleGlassMove}>
       <Sidebar
         selectedCat={selectedCat}
         onSelect={handleSelectCat}
@@ -121,6 +131,9 @@ export default function App() {
           setAccent={setAccent}
           bg={bg}
           setBackground={setBackground}
+          imageUrl={imageUrl}
+          onUploadImage={uploadImage}
+          onClearImage={clearImage}
           autostartEnabled={autoEnabled}
           autostartReady={autoReady}
           onToggleAutostart={toggleAutostart}

@@ -8,6 +8,9 @@ type SettingsModalProps = {
   setAccent: (a: AccentKey) => void;
   bg: BackgroundKey;
   setBackground: (b: BackgroundKey) => void;
+  imageUrl: string;
+  onUploadImage: (file: File) => void;
+  onClearImage: () => void;
   autostartEnabled: boolean;
   autostartReady: boolean;
   onToggleAutostart: () => void;
@@ -21,6 +24,9 @@ export function SettingsModal({
   setAccent,
   bg,
   setBackground,
+  imageUrl,
+  onUploadImage,
+  onClearImage,
   autostartEnabled,
   autostartReady,
   onToggleAutostart,
@@ -32,7 +38,7 @@ export function SettingsModal({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="modal settings-modal"
+        className="modal glass-modal settings-modal"
         role="dialog"
         aria-modal="true"
         aria-label="设置"
@@ -96,22 +102,51 @@ export function SettingsModal({
           {/* 背景 */}
           <section className="settings-group">
             <div className="settings-row-head">
-              <span className="settings-label">背景</span>
+              <span className="settings-label">背景 · 极光</span>
             </div>
             <div className="swatch-row">
-              {bgKeys.map((key) => (
-                <button
-                  key={key}
-                  className={`bg-swatch ${bg === key ? "active" : ""}`}
-                  style={{ background: BACKGROUNDS[key].preview }}
-                  onClick={() => setBackground(key)}
-                  aria-label={`背景 ${BACKGROUNDS[key].label}`}
-                  title={BACKGROUNDS[key].label}
-                />
-              ))}
+              {bgKeys
+                .filter((k) => k !== "image")
+                .map((key) => (
+                  <button
+                    key={key}
+                    className={`bg-swatch ${bg === key ? "active" : ""}`}
+                    style={{ background: BACKGROUNDS[key].preview }}
+                    onClick={() => setBackground(key)}
+                    aria-label={`背景 ${BACKGROUNDS[key].label}`}
+                    title={BACKGROUNDS[key].label}
+                  />
+                ))}
             </div>
-            <div className="settings-hint">
-              已选：{BACKGROUNDS[bg].label}
+            <div className="settings-hint">已选：{BACKGROUNDS[bg].label}</div>
+
+            <div className="bg-upload">
+              <label className="upload-btn">
+                📷 上传图片
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="file-hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) onUploadImage(f);
+                    e.currentTarget.value = "";
+                  }}
+                />
+              </label>
+              {imageUrl && (
+                <button className="clear-btn" onClick={onClearImage}>
+                  ✕ 使用自定义图片
+                </button>
+              )}
+              {imageUrl && (
+                <span
+                  className={`bg-swatch bg-image-swatch ${bg === "image" ? "active" : ""}`}
+                  style={{ background: `url("${imageUrl}") center / cover` }}
+                  onClick={() => setBackground("image")}
+                  title="使用已上传图片"
+                />
+              )}
             </div>
           </section>
 
