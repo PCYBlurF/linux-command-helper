@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "默认窗口能力：仅授予核心默认权限（本应用无自定义 IPC）。",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

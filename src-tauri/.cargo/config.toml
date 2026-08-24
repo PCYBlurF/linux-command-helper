@@ -1,0 +1,13 @@
+# 使用国内 crates 镜像加速下载（仅对本工程生效）。
+# 若本机访问 crates.io 不慢，可删除此文件。
+[source.crates-io]
+replace-with = "rsproxy-sparse"
+
+[source.rsproxy-sparse]
+registry = "sparse+https://rsproxy.cn/index/"
+
+[registries.rsproxy]
+index = "sparse+https://rsproxy.cn/index/"
+
+[net]
+git-fetch-with-cli = true
