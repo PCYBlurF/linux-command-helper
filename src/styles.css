@@ -319,7 +319,8 @@ html[data-theme="light"] .app-sub { text-shadow: 0 1px 10px rgba(255, 255, 255, 
 .scroll-thumb {
   position: absolute; width: 6px; border-radius: 999px; cursor: grab;
   background: var(--scroll-thumb);
-  transform-origin: right center;
+  left: 50%; margin-left: -3px;
+  transform-origin: center;
   transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
 }
 .scroll-thumb:hover, .scroll-thumb.dragging {
