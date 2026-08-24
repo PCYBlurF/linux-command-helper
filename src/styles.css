@@ -217,3 +217,49 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
 ::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------- 背景 ---------- */
+html[data-bg="default"] body { background: var(--bg); }
+html[data-bg="aurora1"] body { background: linear-gradient(135deg,#0f172a,#312e81 45%,#7c3aed); }
+html[data-bg="aurora2"] body { background: linear-gradient(135deg,#020617,#0c4a6e 50%,#0f766e); }
+html[data-bg="aurora3"] body { background: linear-gradient(135deg,#1c1917,#7c2d12 55%,#b45309); }
+html[data-bg="dusk"] body { background: linear-gradient(140deg,#18181b,#3b0764 60%,#831843); }
+html[data-bg="rose"] body { background: linear-gradient(130deg,#1e1b4b,#9d174d 55%,#6d28d9); }
+
+/* ---------- 设置弹窗 ---------- */
+.settings-modal { width: min(560px, 100%); }
+.settings-head-icon { font-size: 22px; }
+.settings-title { font-size: 18px; font-family: inherit; }
+.settings-body { display: flex; flex-direction: column; gap: 22px; }
+.settings-group { display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.settings-group:last-child { border-bottom: none; padding-bottom: 0; }
+.settings-row-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.settings-label { font-weight: 600; font-size: 14px; color: var(--text); }
+.settings-hint { font-size: 12.5px; color: var(--text-dim); }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.settings-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+.segmented { display: inline-flex; gap: 3px; padding: 3px; background: var(--hover); border: 1px solid var(--border); border-radius: 10px; align-self: flex-start; }
+.segment { border: none; background: transparent; color: var(--text-dim); padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: background 0.15s, color 0.15s; }
+.segment:hover { color: var(--text); }
+.segment.active { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--text); }
+
+.swatch-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.bg-swatch {
+  width: 46px; height: 46px; border-radius: 10px; cursor: pointer; border: 2px solid transparent;
+  padding: 0; transition: border-color 0.15s, transform 0.12s;
+}
+.bg-swatch:hover { transform: scale(1.06); }
+.bg-swatch.active { border-color: var(--accent); }
+
+.switch {
+  position: relative; width: 46px; height: 26px; border-radius: 999px; border: none; cursor: pointer;
+  background: var(--border); transition: background 0.18s; flex-shrink: 0; padding: 0;
+}
+.switch.on { background: var(--accent); }
+.switch:disabled { opacity: 0.5; cursor: default; }
+.switch-knob {
+  position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; transition: transform 0.18s; display: block;
+}
+.switch.on .switch-knob { transform: translateX(20px); }

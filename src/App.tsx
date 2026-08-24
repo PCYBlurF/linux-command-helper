@@ -2,11 +2,14 @@ import { useMemo, useState } from "react";
 import { COMMANDS, type Command } from "./data/commands";
 import { searchCommands } from "./lib/search";
 import { useFavorites } from "./hooks/useFavorites";
-import { useTheme, ACCENTS, type AccentKey } from "./hooks/useTheme";
+import { useTheme } from "./hooks/useTheme";
+import { useBackground } from "./hooks/useBackground";
+import { useAutostart } from "./hooks/useAutostart";
 import { Sidebar } from "./components/Sidebar";
 import { SearchBar } from "./components/SearchBar";
 import { CommandGrid } from "./components/CommandGrid";
 import { CommandDetail } from "./components/CommandDetail";
+import { SettingsModal } from "./components/SettingsModal";
 
 const ALL = "全部";
 const FAV = "收藏";
@@ -15,8 +18,11 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [selectedCat, setSelectedCat] = useState<string>(ALL);
   const [selectedCmd, setSelectedCmd] = useState<Command | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { favs, toggleFav, isFav, favCount } = useFavorites();
   const { theme, setTheme, accent, setAccent } = useTheme();
+  const { bg, setBackground } = useBackground();
+  const { enabled: autoEnabled, ready: autoReady, toggle: toggleAutostart } = useAutostart();
 
   const handleSelectCat = (cat: string) => {
     setSelectedCat(cat);
@@ -69,20 +75,18 @@ export default function App() {
               className="ctrl-btn"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               title="切换深浅色"
+              aria-label="切换深浅色"
             >
               {theme === "dark" ? "🌙" : "☀️"}
             </button>
-            <div className="accent-picker" title="主题色">
-              {(Object.keys(ACCENTS) as AccentKey[]).map((key) => (
-                <button
-                  key={key}
-                  className={`accent-dot ${accent === key ? "active" : ""}`}
-                  style={{ background: ACCENTS[key] }}
-                  onClick={() => setAccent(key)}
-                  aria-label={`主题色 ${key}`}
-                />
-              ))}
-            </div>
+            <button
+              className="ctrl-btn"
+              onClick={() => setSettingsOpen(true)}
+              title="设置"
+              aria-label="设置"
+            >
+              ⚙️
+            </button>
           </div>
         </header>
 
@@ -106,6 +110,21 @@ export default function App() {
           isFav={isFav(selectedCmd.cmd)}
           onToggleFav={toggleFav}
           onClose={() => setSelectedCmd(null)}
+        />
+      )}
+
+      {settingsOpen && (
+        <SettingsModal
+          theme={theme}
+          setTheme={setTheme}
+          accent={accent}
+          setAccent={setAccent}
+          bg={bg}
+          setBackground={setBackground}
+          autostartEnabled={autoEnabled}
+          autostartReady={autoReady}
+          onToggleAutostart={toggleAutostart}
+          onClose={() => setSettingsOpen(false)}
         />
       )}
     </div>
