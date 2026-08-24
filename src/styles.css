@@ -99,7 +99,8 @@ body {
 .sidebar-name { font-weight: 700; font-size: 15px; }
 .sidebar-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
 
-.category-nav { display: flex; flex-direction: column; gap: 3px; overflow-y: auto; flex: 1; }
+.category-nav { flex: 1; min-height: 0; padding: 2px 0; }
+.category-nav .scroll-content { display: flex; flex-direction: column; gap: 3px; padding-right: 10px; }
 .nav-item {
   display: flex; align-items: center; gap: 8px;
   padding: 9px 10px; border: none; background: transparent;
@@ -170,7 +171,7 @@ html[data-theme="light"] .app-sub { text-shadow: 0 1px 10px rgba(255, 255, 255, 
 
 /* ---------- 结果网格 ---------- */
 .results {
-  flex: 1; overflow-y: auto;
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
   margin: 2px 22px 18px; padding: 16px;
   border-radius: 18px;
   background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg));
@@ -181,6 +182,7 @@ html[data-theme="light"] .app-sub { text-shadow: 0 1px 10px rgba(255, 255, 255, 
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
 }
+.results-scroll .scroll-content { padding-right: 10px; }
 .grid {
   display: grid; grid-auto-flow: row;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -301,6 +303,31 @@ html[data-theme="light"] .app-sub { text-shadow: 0 1px 10px rgba(255, 255, 255, 
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); background-clip: padding-box; }
 ::-webkit-scrollbar-track { background: transparent; }
+
+/* 自定义滚动容器：隐藏原生滚动条，渲染可动画的玻璃滑块 */
+.scroll-area { position: relative; overflow: hidden; flex: 1; min-height: 0; }
+.scroll-view {
+  position: absolute; inset: 0;
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: none;
+}
+.scroll-view::-webkit-scrollbar { width: 0; height: 0; }
+.scroll-track {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 12px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.scroll-thumb {
+  position: absolute; width: 6px; border-radius: 999px; cursor: grab;
+  background: var(--scroll-thumb);
+  transform-origin: right center;
+  transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
+}
+.scroll-thumb:hover, .scroll-thumb.dragging {
+  background: var(--scroll-thumb-hover);
+  transform: scaleX(1.7);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.18);
+}
+.scroll-thumb:active { cursor: grabbing; }
 
 /* ---------- 背景 ---------- */
 /* 极光 / 自定义图片背景由 useBackground 通过 body 内联样式动态应用；

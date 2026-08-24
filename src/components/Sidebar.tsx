@@ -1,4 +1,5 @@
 import { CATEGORIES } from "../data/commands";
+import { ScrollArea } from "./ScrollArea";
 
 interface Props {
   selectedCat: string;
@@ -20,7 +21,7 @@ export function Sidebar({ selectedCat, onSelect, favCount, totalCount }: Props) 
           <div className="sidebar-sub">离线 · 154 条常用指令</div>
         </div>
       </div>
-      <nav className="category-nav">
+      <ScrollArea className="category-nav">
         <button
           className={`nav-item ${selectedCat === ALL ? "active" : ""}`}
           onClick={() => onSelect(ALL)}
@@ -49,7 +50,7 @@ export function Sidebar({ selectedCat, onSelect, favCount, totalCount }: Props) 
             <span className="nav-num">{cat.count}</span>
           </button>
         ))}
-      </nav>
+      </ScrollArea>
     </aside>
   );
 }

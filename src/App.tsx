@@ -10,6 +10,7 @@ import { SearchBar } from "./components/SearchBar";
 import { CommandGrid } from "./components/CommandGrid";
 import { CommandDetail } from "./components/CommandDetail";
 import { SettingsModal } from "./components/SettingsModal";
+import { ScrollArea } from "./components/ScrollArea";
 
 const ALL = "全部";
 const FAV = "收藏";
@@ -103,14 +104,16 @@ export default function App() {
         <SearchBar query={query} onQuery={setQuery} />
 
         <section className="results">
-          <CommandGrid
-            list={list}
-            isEmpty={list.length === 0}
-            emptyText={emptyText}
-            favs={favs}
-            onToggleFav={toggleFav}
-            onOpen={setSelectedCmd}
-          />
+          <ScrollArea className="results-scroll">
+            <CommandGrid
+              list={list}
+              isEmpty={list.length === 0}
+              emptyText={emptyText}
+              favs={favs}
+              onToggleFav={toggleFav}
+              onOpen={setSelectedCmd}
+            />
+          </ScrollArea>
         </section>
       </main>
 
