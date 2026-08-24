@@ -24,6 +24,8 @@
   --card-border: rgba(255, 255, 255, 0.12);
   --modal-bg: rgba(15, 18, 26, 0.78);
   --modal-border: rgba(255, 255, 255, 0.14);
+  --scroll-thumb: rgba(255, 255, 255, 0.26);
+  --scroll-thumb-hover: rgba(255, 255, 255, 0.42);
 }
 
 /* 主题色 */
@@ -57,6 +59,8 @@ html[data-theme="light"] {
   --card-border: rgba(255, 255, 255, 0.9);
   --modal-bg: rgba(255, 255, 255, 0.84);
   --modal-border: rgba(255, 255, 255, 0.9);
+  --scroll-thumb: rgba(20, 30, 50, 0.18);
+  --scroll-thumb-hover: rgba(20, 30, 50, 0.3);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -284,9 +288,14 @@ html[data-theme="light"] .app-sub { text-shadow: 0 1px 10px rgba(255, 255, 255, 
 }
 
 /* ---------- 滚动条 ---------- */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); background-clip: padding-box; }
 ::-webkit-scrollbar-track { background: transparent; }
 
 /* ---------- 背景 ---------- */
