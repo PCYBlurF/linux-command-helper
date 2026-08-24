@@ -1,6 +1,6 @@
 [package]
 name = "linux-command-helper"
-version = "1.0.0"
+version = "0.1.0"
 description = "Linux 指令速查助手 —— 离线 Linux 命令速查桌面应用"
 authors = ["LinuxCommandHelper"]
 edition = "2021"

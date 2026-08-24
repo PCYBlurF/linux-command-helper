@@ -1734,7 +1734,7 @@ dependencies = [
 
 [[package]]
 name = "linux-command-helper"
-version = "1.0.0"
+version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
