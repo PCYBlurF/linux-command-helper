@@ -22,8 +22,8 @@
   --glass-saturate: 150%;
   --card-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
   --card-border: rgba(255, 255, 255, 0.12);
-  --modal-bg: rgba(15, 18, 26, 0.78);
-  --modal-border: rgba(255, 255, 255, 0.14);
+  --modal-bg: rgba(15, 18, 26, 0.62);
+  --modal-border: rgba(255, 255, 255, 0.15);
   --scroll-thumb: rgba(255, 255, 255, 0.26);
   --scroll-thumb-hover: rgba(255, 255, 255, 0.42);
 }
@@ -57,8 +57,8 @@ html[data-theme="light"] {
   --glass-saturate: 140%;
   --card-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.58));
   --card-border: rgba(255, 255, 255, 0.9);
-  --modal-bg: rgba(255, 255, 255, 0.84);
-  --modal-border: rgba(255, 255, 255, 0.9);
+  --modal-bg: rgba(247, 249, 253, 0.6);
+  --modal-border: rgba(255, 255, 255, 0.85);
   --scroll-thumb: rgba(20, 30, 50, 0.18);
   --scroll-thumb-hover: rgba(20, 30, 50, 0.3);
 }
@@ -240,8 +240,8 @@ html[data-theme="light"] .app-sub { text-shadow: 0 1px 10px rgba(255, 255, 255, 
 .modal {
   background: var(--modal-bg); border: 1px solid var(--modal-border); border-radius: 18px;
   width: min(640px, 100%); max-height: 86vh; display: flex; flex-direction: column;
-  -webkit-backdrop-filter: blur(26px) saturate(var(--glass-saturate));
-  backdrop-filter: blur(26px) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(30px) saturate(var(--glass-saturate));
+  backdrop-filter: blur(30px) saturate(var(--glass-saturate));
   box-shadow: inset 0 1px 0 var(--glass-edge), 0 30px 70px rgba(0, 0, 0, 0.5);
   animation: pop 0.18s ease;
 }
@@ -317,10 +317,25 @@ html[data-bg="image"] body { background: var(--bg); }
 .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .settings-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
 
-.segmented { display: inline-flex; gap: 3px; padding: 3px; background: var(--hover); border: 1px solid var(--border); border-radius: 10px; align-self: flex-start; }
-.segment { border: none; background: transparent; color: var(--text-dim); padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: background 0.15s, color 0.15s; }
-.segment:hover { color: var(--text); }
-.segment.active { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--text); }
+.segmented {
+  display: inline-flex; gap: 3px; padding: 4px; align-self: flex-start;
+  background: var(--card-bg);
+  border: 1px solid var(--glass-border); border-radius: 12px;
+  -webkit-backdrop-filter: blur(14px) saturate(var(--glass-saturate));
+  backdrop-filter: blur(14px) saturate(var(--glass-saturate));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.segment {
+  border: none; background: transparent; color: var(--text-dim);
+  padding: 7px 16px; border-radius: 9px; cursor: pointer; font-size: 13px;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.segment:hover { color: var(--text); background: var(--hover); }
+.segment.active {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 16%, var(--glass-bg-strong)), color-mix(in srgb, var(--accent) 7%, var(--glass-bg)));
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.16);
+}
 
 .swatch-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .bg-swatch {
@@ -346,15 +361,25 @@ html[data-bg="image"] body { background: var(--bg); }
 .bg-upload { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
 .upload-btn {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 14px; border: 1px dashed color-mix(in srgb, var(--accent) 60%, var(--border));
-  border-radius: 10px; background: color-mix(in srgb, var(--accent) 8%, transparent);
-  color: var(--text); font-size: 13px; cursor: pointer; transition: background 0.15s, border-color 0.15s;
+  padding: 8px 14px; border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg));
+  color: var(--text); font-size: 13px; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(12px) saturate(var(--glass-saturate));
+  backdrop-filter: blur(12px) saturate(var(--glass-saturate));
+  transition: background 0.15s, border-color 0.15s, transform 0.12s;
 }
-.upload-btn:hover { background: color-mix(in srgb, var(--accent) 16%, transparent); border-color: var(--accent); }
+.upload-btn:hover {
+  background: var(--hover);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--glass-border));
+  transform: translateY(-1px);
+}
 .file-hidden { display: none; }
 .clear-btn {
-  border: 1px solid var(--border); background: transparent; color: var(--text-dim);
+  border: 1px solid var(--glass-border); background: var(--card-bg); color: var(--text-dim);
   padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 13px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: background 0.15s, color 0.15s;
 }
 .clear-btn:hover { background: var(--hover); color: var(--text); }
