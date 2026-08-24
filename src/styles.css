@@ -188,6 +188,7 @@ html[data-theme="light"] .app-sub { text-shadow: 0 1px 10px rgba(255, 255, 255, 
   display: flex; flex-direction: column; gap: 8px;
   background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius);
   padding: 14px 16px; text-align: left; cursor: pointer;
+  color: var(--text);
   outline: none;
   box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
   transition: transform 0.12s, box-shadow 0.15s, border-color 0.15s;
