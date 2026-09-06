@@ -158,16 +158,27 @@ html[data-theme="light"] .app-sub { text-shadow: 0 1px 10px rgba(255, 255, 255, 
 }
 .search-icon { position: absolute; left: 14px; font-size: 15px; opacity: 0.7; }
 .search-input {
-  width: 100%; padding: 11px 40px 11px 38px;
+  width: 100%; padding: 11px 128px 11px 38px;
   background: transparent; border: none; border-radius: 12px;
   color: var(--text); font-size: 14.5px; outline: none;
 }
 .search-input::placeholder { color: var(--text-dim); }
 .search-clear {
-  position: absolute; right: 12px; border: none; background: transparent; color: var(--text-dim);
+  position: absolute; right: 84px; border: none; background: transparent; color: var(--text-dim);
   cursor: pointer; font-size: 14px; padding: 4px 6px; border-radius: 6px;
 }
 .search-clear:hover { color: var(--text); }
+.gen-btn {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 7px 12px; border: 1px solid var(--glass-border); border-radius: 10px;
+  background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg));
+  color: var(--text); font-size: 12.5px; cursor: pointer; font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  transition: background 0.15s, border-color 0.15s, transform 0.12s, opacity 0.15s;
+}
+.gen-btn:hover { background: var(--hover); border-color: color-mix(in srgb, #ffffff 28%, var(--glass-border)); transform: translateY(-50%) translateX(-1px); }
+.gen-btn:disabled { opacity: 0.4; cursor: default; transform: translateY(-50%); }
 
 /* ---------- 结果网格 ---------- */
 .results {
@@ -416,3 +427,54 @@ html[data-bg="image"] body { background: var(--bg); }
 }
 .clear-btn:hover { background: var(--hover); color: var(--text); }
 .bg-image-swatch { width: 46px; height: 46px; }
+
+/* ---------- 生成指令卡片 ---------- */
+.gen-card {
+  margin-bottom: 14px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg));
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 0 var(--glass-edge), 0 12px 30px rgba(0, 0, 0, 0.18);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  animation: pop 0.18s ease;
+}
+.gen-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.gen-head-title { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-dim); font-weight: 600; }
+.gen-spark { font-size: 14px; }
+.gen-close { border: none; background: transparent; color: var(--text-dim); font-size: 15px; cursor: pointer; padding: 2px 6px; border-radius: 6px; }
+.gen-close:hover { color: var(--text); background: var(--hover); }
+.gen-command { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.gen-command code {
+  flex: 1; font-family: Consolas, monospace; background: var(--code-bg); color: var(--code-text);
+  padding: 11px 14px; border-radius: 10px; font-size: 14px;
+  overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+}
+.gen-desc { font-size: 13.5px; line-height: 1.7; color: var(--text); margin-bottom: 10px; }
+.gen-danger {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 12px; border-radius: 10px; margin-bottom: 10px;
+  font-size: 12.5px; line-height: 1.5;
+  background: color-mix(in srgb, #f87171 12%, transparent);
+  border: 1px solid color-mix(in srgb, #f87171 35%, transparent);
+  color: #fca5a5;
+}
+html[data-theme="light"] .gen-danger { color: #b91c1c; }
+.gen-tips { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.gen-tip { display: flex; gap: 6px; font-size: 12.5px; color: var(--text-dim); line-height: 1.5; }
+.gen-tip-dot { color: var(--accent-2); }
+.gen-refs { display: flex; flex-direction: column; gap: 8px; }
+.gen-refs-label { font-size: 12px; color: var(--text-dim); letter-spacing: 0.5px; }
+.gen-refs-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.gen-ref-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--card-border); background: var(--card-bg);
+  color: var(--text); font-size: 12.5px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: transform 0.12s, border-color 0.15s, background 0.15s;
+}
+.gen-ref-chip:hover { transform: translateY(-1px); border-color: color-mix(in srgb, #ffffff 28%, var(--card-border)); }
+.gen-ref-chip .card-icon { font-size: 14px; }
+.gen-ref-cmd { font-family: Consolas, monospace; font-weight: 600; }

@@ -1,6 +1,7 @@
 import { useMemo, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { COMMANDS, type Command } from "./data/commands";
 import { searchCommands } from "./lib/search";
+import { generateCommand, type GeneratedCommand } from "./lib/generate";
 import { useFavorites } from "./hooks/useFavorites";
 import { useTheme } from "./hooks/useTheme";
 import { useBackground } from "./hooks/useBackground";
@@ -9,6 +10,7 @@ import { Sidebar } from "./components/Sidebar";
 import { SearchBar } from "./components/SearchBar";
 import { CommandGrid } from "./components/CommandGrid";
 import { CommandDetail } from "./components/CommandDetail";
+import { CommandGenerator } from "./components/CommandGenerator";
 import { SettingsModal } from "./components/SettingsModal";
 import { ScrollArea } from "./components/ScrollArea";
 
@@ -19,6 +21,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [selectedCat, setSelectedCat] = useState<string>(ALL);
   const [selectedCmd, setSelectedCmd] = useState<Command | null>(null);
+  const [generated, setGenerated] = useState<GeneratedCommand | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { favs, toggleFav, isFav, favCount } = useFavorites();
   const { theme, setTheme, accent, setAccent } = useTheme();
@@ -38,6 +41,19 @@ export default function App() {
   const handleSelectCat = (cat: string) => {
     setSelectedCat(cat);
     setQuery("");
+    setGenerated(null);
+  };
+
+  const handleQuery = (q: string) => {
+    setQuery(q);
+    setGenerated(null);
+  };
+
+  const handleGenerate = (q: string) => setGenerated(generateCommand(q));
+
+  const handleOpenRef = (cmd: string) => {
+    const c = COMMANDS.find((x) => x.cmd === cmd);
+    if (c) setSelectedCmd(c);
   };
 
   const { list, title, emptyText } = useMemo(() => {
@@ -101,9 +117,16 @@ export default function App() {
           </div>
         </header>
 
-        <SearchBar query={query} onQuery={setQuery} />
+        <SearchBar query={query} onQuery={handleQuery} onGenerate={handleGenerate} />
 
         <section className="results">
+          {generated && (
+            <CommandGenerator
+              generated={generated}
+              onClose={() => setGenerated(null)}
+              onOpenRef={handleOpenRef}
+            />
+          )}
           <ScrollArea className="results-scroll">
             <CommandGrid
               list={list}

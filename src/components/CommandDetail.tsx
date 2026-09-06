@@ -1,35 +1,12 @@
 import { useEffect, useState } from "react";
 import type { Command } from "../data/commands";
+import { copyText } from "../lib/clipboard";
 
 interface Props {
   command: Command;
   isFav: boolean;
   onToggleFav: (cmd: string) => void;
   onClose: () => void;
-}
-
-async function copyText(text: string): Promise<boolean> {
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-  } catch {
-    /* fall through */
-  }
-  try {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    const ok = document.execCommand("copy");
-    document.body.removeChild(ta);
-    return ok;
-  } catch {
-    return false;
-  }
 }
 
 function CopyButton({ text }: { text: string }) {
