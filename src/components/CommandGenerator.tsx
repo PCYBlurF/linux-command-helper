@@ -7,6 +7,7 @@ interface Props {
   generated: GeneratedCommand;
   onClose: () => void;
   onOpenRef: (cmd: string) => void;
+  disableEscape?: boolean;
 }
 
 function GenCopyButton({ text }: { text: string }) {
@@ -36,14 +37,15 @@ function RefChip({ cmd, onClick }: { cmd: Command; onClick: () => void }) {
   );
 }
 
-export function CommandGenerator({ generated, onClose, onOpenRef }: Props) {
+export function CommandGenerator({ generated, onClose, onOpenRef, disableEscape }: Props) {
   useEffect(() => {
+    if (disableEscape) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [onClose, disableEscape]);
 
   return (
     <div className="gen-card">

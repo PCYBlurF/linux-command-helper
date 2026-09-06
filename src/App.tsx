@@ -1,7 +1,6 @@
 import { useMemo, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { COMMANDS, type Command } from "./data/commands";
 import { searchCommands } from "./lib/search";
-import { generateCommand, type GeneratedCommand } from "./lib/generate";
 import { useFavorites } from "./hooks/useFavorites";
 import { useTheme } from "./hooks/useTheme";
 import { useBackground } from "./hooks/useBackground";
@@ -10,7 +9,7 @@ import { Sidebar } from "./components/Sidebar";
 import { SearchBar } from "./components/SearchBar";
 import { CommandGrid } from "./components/CommandGrid";
 import { CommandDetail } from "./components/CommandDetail";
-import { CommandGenerator } from "./components/CommandGenerator";
+import { GenerateModal } from "./components/GenerateModal";
 import { SettingsModal } from "./components/SettingsModal";
 import { ScrollArea } from "./components/ScrollArea";
 
@@ -21,7 +20,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [selectedCat, setSelectedCat] = useState<string>(ALL);
   const [selectedCmd, setSelectedCmd] = useState<Command | null>(null);
-  const [generated, setGenerated] = useState<GeneratedCommand | null>(null);
+  const [genOpen, setGenOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { favs, toggleFav, isFav, favCount } = useFavorites();
   const { theme, setTheme, accent, setAccent } = useTheme();
@@ -41,15 +40,7 @@ export default function App() {
   const handleSelectCat = (cat: string) => {
     setSelectedCat(cat);
     setQuery("");
-    setGenerated(null);
   };
-
-  const handleQuery = (q: string) => {
-    setQuery(q);
-    setGenerated(null);
-  };
-
-  const handleGenerate = (q: string) => setGenerated(generateCommand(q));
 
   const handleOpenRef = (cmd: string) => {
     const c = COMMANDS.find((x) => x.cmd === cmd);
@@ -99,6 +90,14 @@ export default function App() {
           </div>
           <div className="topbar-controls">
             <button
+              className="gen-open-btn"
+              onClick={() => setGenOpen(true)}
+              title="根据描述生成指令"
+              aria-label="生成指令"
+            >
+              🧠 生成
+            </button>
+            <button
               className="ctrl-btn"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               title="切换深浅色"
@@ -117,16 +116,9 @@ export default function App() {
           </div>
         </header>
 
-        <SearchBar query={query} onQuery={handleQuery} onGenerate={handleGenerate} />
+        <SearchBar query={query} onQuery={setQuery} />
 
         <section className="results">
-          {generated && (
-            <CommandGenerator
-              generated={generated}
-              onClose={() => setGenerated(null)}
-              onOpenRef={handleOpenRef}
-            />
-          )}
           <ScrollArea className="results-scroll">
             <CommandGrid
               list={list}
@@ -147,6 +139,10 @@ export default function App() {
           onToggleFav={toggleFav}
           onClose={() => setSelectedCmd(null)}
         />
+      )}
+
+      {genOpen && (
+        <GenerateModal onClose={() => setGenOpen(false)} onOpenRef={handleOpenRef} />
       )}
 
       {settingsOpen && (
