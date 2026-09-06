@@ -431,6 +431,9 @@ html[data-bg="image"] body { background: var(--bg); }
 }
 .clear-btn:hover { background: var(--hover); color: var(--text); }
 .bg-image-swatch { width: 46px; height: 46px; }
+.bg-recent { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border); }
+.bg-recent .settings-label { font-size: 13px; }
+.bg-recent .bg-swatch { width: 40px; height: 40px; border-radius: 9px; }
 
 /* ---------- 生成指令卡片 ---------- */
 .gen-card {

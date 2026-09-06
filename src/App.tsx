@@ -24,7 +24,15 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { favs, toggleFav, isFav, favCount } = useFavorites();
   const { theme, setTheme, accent, setAccent } = useTheme();
-  const { bg, setBackground, imageUrl, uploadImage, clearImage } = useBackground();
+  const {
+    bg,
+    setBackground,
+    imageUrl,
+    uploadImage,
+    clearImage,
+    recent,
+    switchRecent,
+  } = useBackground();
   const { enabled: autoEnabled, ready: autoReady, toggle: toggleAutostart } = useAutostart();
 
   // 液态玻璃「高光随鼠标」：把鼠标在玻璃表面上的位置写为 CSS 变量用于高光定位。
@@ -156,6 +164,8 @@ export default function App() {
           imageUrl={imageUrl}
           onUploadImage={uploadImage}
           onClearImage={clearImage}
+          recent={recent}
+          onSwitchRecent={switchRecent}
           autostartEnabled={autoEnabled}
           autostartReady={autoReady}
           onToggleAutostart={toggleAutostart}

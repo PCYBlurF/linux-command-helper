@@ -1,4 +1,4 @@
-import { BACKGROUNDS, type BackgroundKey } from "../hooks/useBackground";
+import { BACKGROUNDS, type BackgroundKey, type RecentBg } from "../hooks/useBackground";
 import { ACCENTS, type AccentKey, type Theme } from "../hooks/useTheme";
 
 type SettingsModalProps = {
@@ -11,6 +11,8 @@ type SettingsModalProps = {
   imageUrl: string;
   onUploadImage: (file: File) => void;
   onClearImage: () => void;
+  recent: RecentBg[];
+  onSwitchRecent: (entry: RecentBg) => void;
   autostartEnabled: boolean;
   autostartReady: boolean;
   onToggleAutostart: () => void;
@@ -27,6 +29,8 @@ export function SettingsModal({
   imageUrl,
   onUploadImage,
   onClearImage,
+  recent,
+  onSwitchRecent,
   autostartEnabled,
   autostartReady,
   onToggleAutostart,
@@ -148,6 +152,27 @@ export function SettingsModal({
                 />
               )}
             </div>
+
+            {recent.length > 0 && (
+              <div className="bg-recent">
+                <div className="settings-row-head">
+                  <span className="settings-label">最近使用</span>
+                  <span className="settings-hint">单击快速切换 · 最多 {Math.min(recent.length, 5)} 张</span>
+                </div>
+                <div className="swatch-row">
+                  {recent.map((r) => (
+                    <button
+                      key={r.bg}
+                      className={`bg-swatch ${bg === r.bg ? "active" : ""}`}
+                      style={{ background: r.thumb }}
+                      onClick={() => onSwitchRecent(r)}
+                      title={BACKGROUNDS[r.bg].label}
+                      aria-label={`最近背景 ${BACKGROUNDS[r.bg].label}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </section>
 
           {/* 开机自启动 */}
