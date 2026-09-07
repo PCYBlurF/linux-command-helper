@@ -1,5 +1,7 @@
+import { useRef, useState } from "react";
 import { BACKGROUNDS, type BackgroundKey, type SavedImage } from "../hooks/useBackground";
 import { ACCENTS, type AccentKey, type Theme } from "../hooks/useTheme";
+import { downloadBackupFile, importBackupFile } from "../lib/backup";
 
 type SettingsModalProps = {
   theme: Theme;
@@ -42,6 +44,23 @@ export function SettingsModal({
 }: SettingsModalProps) {
   const accentKeys = Object.keys(ACCENTS) as AccentKey[];
   const bgKeys = Object.keys(BACKGROUNDS) as BackgroundKey[];
+  const importRef = useRef<HTMLInputElement>(null);
+  const [backupMsg, setBackupMsg] = useState<string | null>(null);
+
+  const handleExport = () => {
+    downloadBackupFile();
+    setBackupMsg("已导出备份文件，请到浏览器的下载目录查看。");
+  };
+
+  const handleImport = async (file: File) => {
+    const res = await importBackupFile(file);
+    if (res.ok) {
+      setBackupMsg(res.message);
+      setTimeout(() => window.location.reload(), 900);
+    } else {
+      setBackupMsg(res.message);
+    }
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -213,6 +232,41 @@ export function SettingsModal({
                 <span className="switch-knob" />
               </button>
             </div>
+          </section>
+
+          {/* 数据备份 / 恢复 */}
+          <section className="settings-group">
+            <div className="settings-row-head">
+              <span className="settings-label">数据备份</span>
+              <span className="settings-hint">导出 / 恢复</span>
+            </div>
+            <p className="settings-desc">
+              导出会生成一个 JSON 备份文件（含收藏、外观、背景、开机自启状态）；导入可整体恢复到这台电脑或重装后。
+            </p>
+            <div className="backup-actions">
+              <button className="backup-btn" onClick={handleExport}>
+                ⬇️ 导出备份
+              </button>
+              <button className="backup-btn" onClick={() => importRef.current?.click()}>
+                ⬆️ 导入备份
+              </button>
+              <input
+                ref={importRef}
+                type="file"
+                accept="application/json,.json"
+                className="file-hidden"
+                onChange={(e) => {
+                  const f = e.currentTarget.files?.[0];
+                  if (f) handleImport(f);
+                  e.currentTarget.value = "";
+                }}
+              />
+            </div>
+            {backupMsg && (
+              <div className={`backup-msg${backupMsg.startsWith("成功") ? "" : " err"}`}>
+                {backupMsg}
+              </div>
+            )}
           </section>
         </div>
       </div>

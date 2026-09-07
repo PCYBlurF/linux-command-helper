@@ -1,4 +1,4 @@
-import { useMemo, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent } from "react";
 import { COMMANDS, type Command } from "./data/commands";
 import { searchCommands } from "./lib/search";
 import { useFavorites } from "./hooks/useFavorites";
@@ -22,6 +22,8 @@ export default function App() {
   const [selectedCmd, setSelectedCmd] = useState<Command | null>(null);
   const [genOpen, setGenOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const searchRef = useRef<HTMLInputElement>(null);
   const { favs, toggleFav, isFav, favCount } = useFavorites();
   const { theme, setTheme, accent, setAccent } = useTheme();
   const {
@@ -82,8 +84,58 @@ export default function App() {
     };
   }, [query, selectedCat, favs]);
 
+  // 结果列表变化（切分类 / 搜索 / 收藏变化）时重置键盘焦点索引。
+  useEffect(() => {
+    setActiveIndex(-1);
+  }, [query, selectedCat, favs]);
+
+  // 让当前高亮的卡片滚动到可视区。
+  useEffect(() => {
+    if (activeIndex < 0) return;
+    document
+      .querySelector(`[data-cmd-index="${activeIndex}"]`)
+      ?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex]);
+
+  // 全局键盘导航：Ctrl/Cmd+K 聚焦搜索；搜索框内 ↑↓ 移动高亮、Enter 打开、Esc 失焦。
+  const handleKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
+    // 有弹窗打开时交给弹窗自己的键盘处理。
+    if (selectedCmd || genOpen || settingsOpen) return;
+
+    const k = e.key;
+    const mod = e.ctrlKey || e.metaKey;
+
+    if (mod && k.toLowerCase() === "k") {
+      e.preventDefault();
+      searchRef.current?.focus();
+      searchRef.current?.select();
+      setActiveIndex(list.length ? 0 : -1);
+      return;
+    }
+
+    if (document.activeElement !== searchRef.current) return;
+
+    if (k === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev >= list.length - 1 ? 0 : prev + 1));
+    } else if (k === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev <= 0 ? list.length - 1 : prev - 1));
+    } else if (k === "Enter") {
+      const target = activeIndex >= 0 ? activeIndex : 0;
+      const c = list[target];
+      if (c) {
+        e.preventDefault();
+        setSelectedCmd(c);
+      }
+    } else if (k === "Escape") {
+      searchRef.current?.blur();
+      setActiveIndex(-1);
+    }
+  };
+
   return (
-    <div className="app" onMouseMove={handleGlassMove}>
+    <div className="app" onMouseMove={handleGlassMove} onKeyDown={handleKeyDown}>
       <Sidebar
         selectedCat={selectedCat}
         onSelect={handleSelectCat}
@@ -125,7 +177,12 @@ export default function App() {
           </div>
         </header>
 
-        <SearchBar query={query} onQuery={setQuery} />
+        <SearchBar query={query} onQuery={setQuery} inputRef={searchRef} />
+
+        <p className="kb-hint">
+          <kbd>Ctrl</kbd>+<kbd>K</kbd> 聚焦搜索 · <kbd>↑</kbd>
+          <kbd>↓</kbd> 选择 · <kbd>Enter</kbd> 打开 · <kbd>Esc</kbd> 返回
+        </p>
 
         <section className="results">
           <ScrollArea className="results-scroll">

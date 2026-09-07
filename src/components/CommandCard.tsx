@@ -5,11 +5,17 @@ interface Props {
   isFav: boolean;
   onToggleFav: (cmd: string) => void;
   onOpen: (cmd: Command) => void;
+  index?: number;
+  active?: boolean;
 }
 
-export function CommandCard({ command, isFav, onToggleFav, onOpen }: Props) {
+export function CommandCard({ command, isFav, onToggleFav, onOpen, index, active }: Props) {
   return (
-    <button className="card" onClick={() => onOpen(command)}>
+    <button
+      className={`card${active ? " active" : ""}`}
+      data-cmd-index={index}
+      onClick={() => onOpen(command)}
+    >
       <div className="card-head">
         <span className="card-icon">{command.icon}</span>
         <span className="card-cmd">{command.cmd}</span>
