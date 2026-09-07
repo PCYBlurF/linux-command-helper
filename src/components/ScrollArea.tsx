@@ -3,13 +3,15 @@ import { useEffect, useRef, useState, type ReactNode, type PointerEvent as React
 interface Props {
   children: ReactNode;
   className?: string;
+  /** 滚轮灵敏度倍率：>1 让内容滚得更快一些。默认 1 = 原生速度。 */
+  wheelGain?: number;
 }
 
 /**
  * 自定义滚动容器：隐藏原生滚动条，渲染可动画的玻璃滑块。
  * 支持滚轮/触摸滚动，滑块可拖动，hover 时放大 + 光晕「上浮」。
  */
-export function ScrollArea({ children, className = "" }: Props) {
+export function ScrollArea({ children, className = "", wheelGain = 1 }: Props) {
   const viewRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -43,6 +45,19 @@ export function ScrollArea({ children, className = "" }: Props) {
       ro.disconnect();
     };
   }, []);
+
+  // 滚轮灵敏度：gain>1 时接管滚轮，按倍率放大每次滚动量，让列表滚得更快。
+  useEffect(() => {
+    const view = viewRef.current;
+    if (!view || !wheelGain || wheelGain === 1) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const unit = e.deltaMode === WheelEvent.DOM_DELTA_LINE ? e.deltaY * 16 : e.deltaY;
+      view.scrollTop += unit * wheelGain;
+    };
+    view.addEventListener("wheel", onWheel, { passive: false });
+    return () => view.removeEventListener("wheel", onWheel);
+  }, [wheelGain]);
 
   const onTrackDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     const view = viewRef.current;

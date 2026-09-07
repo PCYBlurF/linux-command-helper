@@ -21,7 +21,7 @@ export function Sidebar({ selectedCat, onSelect, favCount, totalCount }: Props) 
           <div className="sidebar-sub">离线 · 154 条常用指令</div>
         </div>
       </div>
-      <ScrollArea className="category-nav">
+      <ScrollArea className="category-nav" wheelGain={1.8}>
         <button
           className={`nav-item ${selectedCat === ALL ? "active" : ""}`}
           onClick={() => onSelect(ALL)}
