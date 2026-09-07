@@ -124,6 +124,16 @@ body {
 .topbar-left { display: flex; align-items: baseline; gap: 14px; min-width: 0; }
 .app-title { font-size: 18px; font-weight: 700; white-space: nowrap; text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45); }
 .app-sub { font-size: 13px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4); }
+.app-version {
+  align-self: center;
+  font-size: 12px; font-weight: 600; white-space: nowrap;
+  color: var(--text);
+  padding: 2px 9px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--glass-border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  text-shadow: none;
+}
 html[data-theme="light"] .app-title,
 html[data-theme="light"] .app-sub { text-shadow: 0 1px 10px rgba(255, 255, 255, 0.65); }
 .topbar-controls { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }

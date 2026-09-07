@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent } from "react";
+import { getVersion } from "@tauri-apps/api/app";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { COMMANDS, type Command } from "./data/commands";
 import { searchCommands } from "./lib/search";
 import { useFavorites } from "./hooks/useFavorites";
@@ -24,6 +26,7 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const searchRef = useRef<HTMLInputElement>(null);
+  const [version, setVersion] = useState("");
   const { favs, toggleFav, isFav, favCount } = useFavorites();
   const { theme, setTheme, accent, setAccent } = useTheme();
   const {
@@ -97,6 +100,23 @@ export default function App() {
       ?.scrollIntoView({ block: "nearest" });
   }, [activeIndex]);
 
+  // 读取应用版本号，并同步到窗口标题栏，方便识别某个安装是哪个版本。
+  useEffect(() => {
+    let alive = true;
+    getVersion()
+      .then((v) => {
+        if (!alive) return;
+        setVersion(v);
+        getCurrentWindow()
+          .setTitle(`Linux 指令速查助手 v${v}`)
+          .catch(() => {});
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   // 全局键盘导航：Ctrl/Cmd+K 聚焦搜索；搜索框内 ↑↓ 移动高亮、Enter 打开、Esc 失焦。
   const handleKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
     // 有弹窗打开时交给弹窗自己的键盘处理。
@@ -147,6 +167,7 @@ export default function App() {
         <header className="topbar">
           <div className="topbar-left">
             <h1 className="app-title">Linux 指令速查助手</h1>
+            {version && <span className="app-version">v{version}</span>}
             <span className="app-sub">{title}</span>
           </div>
           <div className="topbar-controls">
