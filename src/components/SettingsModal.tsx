@@ -1,4 +1,4 @@
-import { BACKGROUNDS, type BackgroundKey, type RecentBg } from "../hooks/useBackground";
+import { BACKGROUNDS, type BackgroundKey, type SavedImage } from "../hooks/useBackground";
 import { ACCENTS, type AccentKey, type Theme } from "../hooks/useTheme";
 
 type SettingsModalProps = {
@@ -8,16 +8,19 @@ type SettingsModalProps = {
   setAccent: (a: AccentKey) => void;
   bg: BackgroundKey;
   setBackground: (b: BackgroundKey) => void;
-  imageUrl: string;
+  images: SavedImage[];
+  activeImageId: string | null;
   onUploadImage: (file: File) => void;
+  onSelectImage: (id: string) => void;
+  onRemoveImage: (id: string) => void;
   onClearImage: () => void;
-  recent: RecentBg[];
-  onSwitchRecent: (entry: RecentBg) => void;
   autostartEnabled: boolean;
   autostartReady: boolean;
   onToggleAutostart: () => void;
   onClose: () => void;
 };
+
+const MAX_IMAGES = 5;
 
 export function SettingsModal({
   theme,
@@ -26,11 +29,12 @@ export function SettingsModal({
   setAccent,
   bg,
   setBackground,
-  imageUrl,
+  images,
+  activeImageId,
   onUploadImage,
+  onSelectImage,
+  onRemoveImage,
   onClearImage,
-  recent,
-  onSwitchRecent,
   autostartEnabled,
   autostartReady,
   onToggleAutostart,
@@ -126,53 +130,66 @@ export function SettingsModal({
 
             <div className="bg-upload">
               <label className="upload-btn">
-                📷 上传图片
+                📷 上传图片（可多张）
                 <input
                   type="file"
                   accept="image/*"
+                  multiple
                   className="file-hidden"
                   onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) onUploadImage(f);
+                    const files = Array.from(e.target.files ?? []);
+                    files.forEach((f) => onUploadImage(f));
                     e.currentTarget.value = "";
                   }}
                 />
               </label>
-              {imageUrl && (
+              {images.length > 0 && (
                 <button className="clear-btn" onClick={onClearImage}>
-                  ✕ 使用自定义图片
+                  ✕ 清除全部图片
                 </button>
-              )}
-              {imageUrl && (
-                <span
-                  className={`bg-swatch bg-image-swatch ${bg === "image" ? "active" : ""}`}
-                  style={{ background: `url("${imageUrl}") center / cover` }}
-                  onClick={() => setBackground("image")}
-                  title="使用已上传图片"
-                />
               )}
             </div>
 
-            {recent.length > 0 && (
-              <div className="bg-recent">
-                <div className="settings-row-head">
-                  <span className="settings-label">最近使用</span>
-                  <span className="settings-hint">单击快速切换 · 最多 {Math.min(recent.length, 5)} 张</span>
-                </div>
+            <div className="bg-library">
+              <div className="settings-row-head">
+                <span className="settings-label">我的背景 · 单击切换</span>
+                <span className="settings-hint">
+                  {images.length}/{MAX_IMAGES} 张
+                </span>
+              </div>
+              {images.length === 0 ? (
+                <p className="settings-desc">
+                  保存的自定义图片会出现在这里，单击即可切换；最多保存 {MAX_IMAGES} 张，保存超过后会自动替换最早的一张。
+                </p>
+              ) : (
                 <div className="swatch-row">
-                  {recent.map((r) => (
-                    <button
-                      key={r.bg}
-                      className={`bg-swatch ${bg === r.bg ? "active" : ""}`}
-                      style={{ background: r.thumb }}
-                      onClick={() => onSwitchRecent(r)}
-                      title={BACKGROUNDS[r.bg].label}
-                      aria-label={`最近背景 ${BACKGROUNDS[r.bg].label}`}
-                    />
+                  {images.map((img) => (
+                    <div
+                      key={img.id}
+                      className={`bg-item-wrap ${
+                        activeImageId === img.id && bg === "image" ? "active" : ""
+                      }`}
+                    >
+                      <button
+                        className="bg-swatch bg-item"
+                        style={{ background: `url("${img.dataUrl}") center / cover` }}
+                        onClick={() => onSelectImage(img.id)}
+                        title="单击切换到此背景"
+                        aria-label="切换到此背景"
+                      />
+                      <button
+                        className="bg-item-remove"
+                        onClick={() => onRemoveImage(img.id)}
+                        title="删除此背景"
+                        aria-label="删除此背景"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </section>
 
           {/* 开机自启动 */}

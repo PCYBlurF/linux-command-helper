@@ -8,13 +8,13 @@ export type BackgroundKey =
   | "aurora4"
   | "image";
 
+// 已保存的自定义图片。id 为稳定标识，用于区分不同图片以实现「单击切换」。
+export type SavedImage = { id: string; dataUrl: string };
+
 type BgDef = { label: string; preview: string; css: string };
 
-// 最近切换的某一背景。thumb 用于「最近使用」缩略展示；imageUrl 仅在 background 为 image 时保存该图片快照。
-export type RecentBg = { bg: BackgroundKey; thumb: string; imageUrl?: string };
-
 // 背景预设。preview 用于设置面板中的缩略预览；css 作为应用到 body 的背景值。
-// image 为「自定义上传图片」，由 imageUrl 动态驱动。
+// image 为「自定义图片」，由 images 库里的图片动态驱动。
 export const BACKGROUNDS: Record<BackgroundKey, BgDef> = {
   default: {
     label: "默认",
@@ -47,9 +47,9 @@ export const BACKGROUNDS: Record<BackgroundKey, BgDef> = {
 export type { BgDef };
 
 const BG_KEY = "lch-bg";
-const IMG_KEY = "lch-bg-image";
-const RECENT_KEY = "lch-bg-recent";
-const MAX_RECENT = 5;
+const IMAGES_KEY = "lch-bg-images";
+const ACTIVE_IMG_KEY = "lch-bg-active-image";
+const MAX_IMAGES = 5;
 const MAX_EDGE = 1920;
 
 function readBackground(): BackgroundKey {
@@ -62,53 +62,36 @@ function readBackground(): BackgroundKey {
   return "default";
 }
 
-function readImage(): string {
+function readImages(): SavedImage[] {
   try {
-    return localStorage.getItem(IMG_KEY) || "";
-  } catch {
-    return "";
-  }
-}
-
-// 读取最近背景记忆，过滤非法项并按 bg 去重。
-function readRecent(): RecentBg[] {
-  try {
-    const raw = localStorage.getItem(RECENT_KEY);
+    const raw = localStorage.getItem(IMAGES_KEY);
     if (!raw) return [];
     const arr = JSON.parse(raw);
     if (!Array.isArray(arr)) return [];
-    const seen = new Set<string>();
-    const out: RecentBg[] = [];
-    for (const r of arr) {
-      if (
-        r &&
-        typeof r.bg === "string" &&
-        r.bg in BACKGROUNDS &&
-        typeof r.thumb === "string" &&
-        (r.bg !== "image" || typeof r.imageUrl === "string")
-      ) {
-        if (!seen.has(r.bg)) {
-          seen.add(r.bg);
-          out.push({ bg: r.bg, thumb: r.thumb, imageUrl: r.imageUrl });
-        }
-      }
-      if (out.length >= MAX_RECENT) break;
-    }
-    return out;
+    return arr
+      .filter((i) => i && typeof i.id === "string" && typeof i.dataUrl === "string")
+      .slice(0, MAX_IMAGES);
   } catch {
     return [];
   }
 }
 
-// 生成加入新选择后的最近列表：新选择置顶、同背景去重、截取前 MAX_RECENT 个。
-function appendRecent(prev: RecentBg[], k: BackgroundKey, img?: string): RecentBg[] {
-  if (k === "image" && !img) return prev;
-  const thumb =
-    k === "image"
-      ? `url("${img}") center / cover`
-      : BACKGROUNDS[k as Exclude<BackgroundKey, "image">].preview;
-  const entry: RecentBg = { bg: k, thumb, imageUrl: k === "image" ? img : undefined };
-  return [entry, ...prev.filter((r) => r.bg !== k)].slice(0, MAX_RECENT);
+function readActiveImageId(): string | null {
+  try {
+    return localStorage.getItem(ACTIVE_IMG_KEY);
+  } catch {
+    return null;
+  }
+}
+
+// 若当前 activeImageId 已失效则回退到第一张可用图片；无图片则返回 null。
+function validActive(images: SavedImage[], id: string | null): string | null {
+  if (id && images.some((i) => i.id === id)) return id;
+  return images.length ? images[0].id : null;
+}
+
+function genId(): string {
+  return "img-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
 // 将用户图片缩放为不超过 1920px 宽的 JPEG dataURL，以便塞进 localStorage（约 5MB 上限），
@@ -145,15 +128,29 @@ function processImage(file: File): Promise<string> {
 
 export function useBackground() {
   const [bg, setBgState] = useState<BackgroundKey>(readBackground);
-  const [imageUrl, setImageUrl] = useState<string>(readImage);
-  const [recent, setRecent] = useState<RecentBg[]>(readRecent);
+  const [images, setImages] = useState<SavedImage[]>(readImages);
+  const [activeImageId, setActiveImageId] = useState<string | null>(readActiveImageId);
 
-  // 应用背景到 body。预设走内联背景；image 走上传图片；default 清空内联回退到主题底色。
+  // 当前生效的自定义图片（bg === image 时才有意义）。
+  const activeImage =
+    bg === "image" ? images.find((i) => i.id === activeImageId) ?? images[0] ?? null : null;
+
+  // 启动/加载后修正不一致：图片无有效激活项、或 bg=image 但无图片。
+  useEffect(() => {
+    const valid = validActive(images, activeImageId);
+    if (valid !== activeImageId) setActiveImageId(valid);
+  }, [images, activeImageId]);
+
+  useEffect(() => {
+    if (bg === "image" && images.length === 0) setBgState("default");
+  }, [bg, images]);
+
+  // 应用背景到 body。
   useEffect(() => {
     document.documentElement.dataset.bg = bg;
     const b = document.body;
-    if (bg === "image" && imageUrl) {
-      b.style.background = `url("${imageUrl}") center / cover no-repeat`;
+    if (bg === "image" && activeImage) {
+      b.style.background = `url("${activeImage.dataUrl}") center / cover no-repeat`;
     } else if (bg === "default") {
       b.style.background = "";
     } else {
@@ -164,60 +161,84 @@ export function useBackground() {
     } catch {
       /* ignore */
     }
-  }, [bg, imageUrl]);
+  }, [bg, activeImage]);
 
   useEffect(() => {
     try {
-      if (imageUrl) localStorage.setItem(IMG_KEY, imageUrl);
-      else localStorage.removeItem(IMG_KEY);
+      localStorage.setItem(IMAGES_KEY, JSON.stringify(images));
     } catch {
       /* ignore */
     }
-  }, [imageUrl]);
+  }, [images]);
 
   useEffect(() => {
     try {
-      localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
+      if (activeImageId) localStorage.setItem(ACTIVE_IMG_KEY, activeImageId);
+      else localStorage.removeItem(ACTIVE_IMG_KEY);
     } catch {
       /* ignore */
     }
-  }, [recent]);
+  }, [activeImageId]);
 
+  // 切换预设背景（default / 极光*）。
   const setBackground = (k: BackgroundKey) => {
-    if (k === "image" && !imageUrl) return;
+    if (k === "image") return;
     setBgState(k);
-    setRecent((prev) => appendRecent(prev, k, k === "image" ? imageUrl : undefined));
   };
 
-  const uploadImage = async (file: File) => {
+  // 上传一张自定义图片并立即应用；最多保留最近 MAX_IMAGES 张，超出会替换最旧一张。
+  const uploadImage = async (file: File): Promise<boolean> => {
     try {
       const dataUrl = await processImage(file);
-      setImageUrl(dataUrl);
+      const id = genId();
+      setImages((prev) => [{ id, dataUrl }, ...prev].slice(0, MAX_IMAGES));
+      setActiveImageId(id);
       setBgState("image");
-      setRecent((prev) => appendRecent(prev, "image", dataUrl));
+      return true;
     } catch (e) {
       console.error("[background] 上传失败", e);
+      return false;
     }
   };
 
+  // 单击某张已保存图片，直接切换到它。
+  const selectImage = (id: string) => {
+    if (!images.some((i) => i.id === id)) return;
+    setActiveImageId(id);
+    setBgState("image");
+  };
+
+  // 删除某张已保存图片；若是当前激活项则切换到剩余第一张或默认。
+  const removeImage = (id: string) => {
+    setImages((prev) => prev.filter((i) => i.id !== id));
+    if (activeImageId === id) {
+      const remaining = images.filter((i) => i.id !== id);
+      if (remaining.length) {
+        setActiveImageId(remaining[0].id);
+        setBgState("image");
+      } else {
+        setActiveImageId(null);
+        setBgState("default");
+      }
+    }
+  };
+
+  // 清除全部自定义图片并回到默认背景。
   const clearImage = () => {
-    setImageUrl("");
+    setImages([]);
+    setActiveImageId(null);
     setBgState("default");
-    setRecent((prev) => appendRecent(prev, "default"));
   };
 
-  // 点击「最近使用」中的某一项：恢复对应背景；若为自定义图片则同时恢复当时的图片快照。
-  const switchRecent = (entry: RecentBg) => {
-    if (entry.bg === "image") {
-      if (!entry.imageUrl) return;
-      setImageUrl(entry.imageUrl);
-      setBgState("image");
-      setRecent((prev) => appendRecent(prev, "image", entry.imageUrl));
-    } else {
-      setBgState(entry.bg);
-      setRecent((prev) => appendRecent(prev, entry.bg));
-    }
+  return {
+    bg,
+    setBackground,
+    images,
+    activeImage,
+    activeImageId,
+    uploadImage,
+    selectImage,
+    removeImage,
+    clearImage,
   };
-
-  return { bg, setBackground, imageUrl, uploadImage, clearImage, recent, switchRecent };
 }

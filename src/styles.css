@@ -431,9 +431,19 @@ html[data-bg="image"] body { background: var(--bg); }
 }
 .clear-btn:hover { background: var(--hover); color: var(--text); }
 .bg-image-swatch { width: 46px; height: 46px; }
-.bg-recent { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border); }
-.bg-recent .settings-label { font-size: 13px; }
-.bg-recent .bg-swatch { width: 40px; height: 40px; border-radius: 9px; }
+.bg-library { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border); }
+.bg-library .settings-label { font-size: 13px; }
+.bg-item-wrap { position: relative; }
+.bg-item-wrap.active .bg-item { border-color: var(--accent); }
+.bg-item { width: 42px; height: 42px; border-radius: 9px; }
+.bg-item-remove {
+  position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; border-radius: 50%;
+  border: none; cursor: pointer; font-size: 10px; line-height: 1; color: #fff; padding: 0;
+  background: rgba(0, 0, 0, 0.55); display: none; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.bg-item-wrap:hover .bg-item-remove { display: inline-flex; }
+.bg-item-remove:hover { background: #e5484d; }
 
 /* ---------- 生成指令卡片 ---------- */
 .gen-card {

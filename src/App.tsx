@@ -27,11 +27,12 @@ export default function App() {
   const {
     bg,
     setBackground,
-    imageUrl,
+    images,
+    activeImageId,
     uploadImage,
+    selectImage,
+    removeImage,
     clearImage,
-    recent,
-    switchRecent,
   } = useBackground();
   const { enabled: autoEnabled, ready: autoReady, toggle: toggleAutostart } = useAutostart();
 
@@ -161,11 +162,12 @@ export default function App() {
           setAccent={setAccent}
           bg={bg}
           setBackground={setBackground}
-          imageUrl={imageUrl}
+          images={images}
+          activeImageId={activeImageId}
           onUploadImage={uploadImage}
+          onSelectImage={selectImage}
+          onRemoveImage={removeImage}
           onClearImage={clearImage}
-          recent={recent}
-          onSwitchRecent={switchRecent}
           autostartEnabled={autoEnabled}
           autostartReady={autoReady}
           onToggleAutostart={toggleAutostart}
