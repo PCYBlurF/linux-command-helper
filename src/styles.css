@@ -187,7 +187,7 @@ html[data-theme="light"] .app-sub { text-shadow: 0 1px 10px rgba(255, 255, 255, 
   background: transparent; border: none; border-radius: 12px;
   color: var(--text); font-size: 14.5px; outline: none;
 }
-.search-input::placeholder { color: var(--text-dim); }
+.search-input::placeholder { color: color-mix(in srgb, var(--text) 66%, transparent); }
 .search-clear {
   position: absolute; right: 12px; border: none; background: transparent; color: var(--text-dim);
   cursor: pointer; font-size: 14px; padding: 4px 6px; border-radius: 6px;
@@ -200,20 +200,23 @@ html[data-theme="light"] .app-sub { text-shadow: 0 1px 10px rgba(255, 255, 255, 
 }
 .search-kb kbd {
   font-family: inherit; font-size: 10px; line-height: 1; padding: 3px 5px; border-radius: 5px;
-  border: 1px solid var(--glass-border); color: var(--text-dim);
-  background: color-mix(in srgb, #ffffff 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text) 30%, transparent); color: var(--text);
+  background: color-mix(in srgb, var(--glass-bg-strong) 62%, transparent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
 }
 .search-wrap:has(.search-clear) .search-kb { display: none; }
 
 /* 搜索快捷键说明 */
 .kb-hint {
-  margin: -4px 22px 10px; font-size: 12px; color: var(--text-dim);
+  margin: -4px 22px 10px; font-size: 12px; color: var(--text);
   display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.28);
 }
 .kb-hint kbd {
   font-family: inherit; font-size: 11px; line-height: 1; padding: 3px 6px; border-radius: 5px;
-  border: 1px solid var(--glass-border); color: var(--text-dim);
-  background: color-mix(in srgb, #ffffff 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text) 32%, transparent); color: var(--text);
+  background: color-mix(in srgb, var(--glass-bg-strong) 60%, transparent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
 }
 
 /* ---------- 结果网格 ---------- */
