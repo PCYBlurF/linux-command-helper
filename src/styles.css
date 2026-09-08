@@ -435,6 +435,36 @@ html[data-bg="image"] body { background: var(--bg); }
 }
 
 .swatch-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+
+/* 液态玻璃效果度滑杆 */
+.glass-slider-row { display: flex; align-items: center; gap: 14px; }
+.glass-slider {
+  flex: 1;
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px; border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent) var(--glass-suggest, 50%), var(--border) var(--glass-suggest, 50%));
+  outline: none; cursor: pointer;
+}
+.glass-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--accent);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer; transition: transform 0.12s;
+}
+.glass-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.glass-slider::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--accent);
+  cursor: pointer; transition: transform 0.12s;
+}
+.glass-slider::-moz-range-thumb:hover { transform: scale(1.15); }
+.glass-slider::-moz-range-track {
+  height: 6px; border-radius: 999px; background: var(--border);
+}
+.glass-slider::-moz-range-progress {
+  height: 6px; border-radius: 999px; background: var(--accent);
+}
 .bg-swatch {
   width: 46px; height: 46px; border-radius: 10px; cursor: pointer; border: 2px solid transparent;
   padding: 0; transition: border-color 0.15s, transform 0.12s;

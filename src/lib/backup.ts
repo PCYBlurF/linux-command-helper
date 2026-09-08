@@ -8,6 +8,7 @@ const DATA_KEYS = [
   "lch-favorites",
   "lch-theme",
   "lch-accent",
+  "lch-glass",
   "lch-bg",
   "lch-bg-images",
   "lch-bg-active-image",

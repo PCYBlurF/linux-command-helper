@@ -5,6 +5,7 @@ import { COMMANDS, type Command } from "./data/commands";
 import { searchCommands } from "./lib/search";
 import { useFavorites } from "./hooks/useFavorites";
 import { useTheme } from "./hooks/useTheme";
+import { useGlass } from "./hooks/useGlass";
 import { useBackground } from "./hooks/useBackground";
 import { useAutostart } from "./hooks/useAutostart";
 import { Sidebar } from "./components/Sidebar";
@@ -29,6 +30,7 @@ export default function App() {
   const [version, setVersion] = useState("");
   const { favs, toggleFav, isFav, favCount } = useFavorites();
   const { theme, setTheme, accent, setAccent } = useTheme();
+  const { glass, setGlass } = useGlass(theme);
   const {
     bg,
     setBackground,
@@ -238,6 +240,8 @@ export default function App() {
           setTheme={setTheme}
           accent={accent}
           setAccent={setAccent}
+          glass={glass}
+          setGlass={setGlass}
           bg={bg}
           setBackground={setBackground}
           images={images}

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import { BACKGROUNDS, type BackgroundKey, type SavedImage } from "../hooks/useBackground";
 import { ACCENTS, type AccentKey, type Theme } from "../hooks/useTheme";
 import { downloadBackupFile, importBackupFile } from "../lib/backup";
@@ -8,6 +8,8 @@ type SettingsModalProps = {
   setTheme: (t: Theme) => void;
   accent: AccentKey;
   setAccent: (a: AccentKey) => void;
+  glass: number;
+  setGlass: (g: number) => void;
   bg: BackgroundKey;
   setBackground: (b: BackgroundKey) => void;
   images: SavedImage[];
@@ -29,6 +31,8 @@ export function SettingsModal({
   setTheme,
   accent,
   setAccent,
+  glass,
+  setGlass,
   bg,
   setBackground,
   images,
@@ -124,6 +128,30 @@ export function SettingsModal({
                 />
               ))}
             </div>
+          </section>
+
+          {/* 液态玻璃效果度 */}
+          <section className="settings-group">
+            <div className="settings-row-head">
+              <span className="settings-label">液态玻璃效果度</span>
+              <span className="settings-hint">{glass}%</span>
+            </div>
+            <div className="glass-slider-row">
+              <input
+                type="range"
+                className="glass-slider"
+                min={0}
+                max={100}
+                step={1}
+                value={glass}
+                onChange={(e) => setGlass(Number(e.currentTarget.value))}
+                aria-label="液态玻璃效果度"
+                style={{ "--glass-suggest": `${glass}%` } as CSSProperties}
+              />
+            </div>
+            <p className="settings-desc">
+              调节窗口与卡片玻璃的模糊、透明度：0 最通透（接近无玻璃），100 最浓郁。实时生效并自动保存。
+            </p>
           </section>
 
           {/* 背景 */}
