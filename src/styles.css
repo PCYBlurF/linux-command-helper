@@ -232,7 +232,10 @@ html[data-theme="light"] .app-sub { text-shadow: 0 1px 10px rgba(255, 255, 255, 
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
 }
-.results-scroll .scroll-content { padding-right: 10px; }
+.results-scroll .scroll-content {
+  /* 顶/底部留出余量：让卡片 hover 上移 -3px 时不会被滚动容器的裁剪边切掉上边框 */
+  padding: 8px 10px 8px 0;
+}
 .grid {
   display: grid; grid-auto-flow: row;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
